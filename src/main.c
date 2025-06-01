@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "state.h"
 #include "wayland.h"
@@ -9,7 +10,7 @@ main(int argc, char *argv[])
 {
 	struct state *state = state_init(argc, argv);
 	char input[BUFSIZ];
-	while (wl_display_dispatch(state->wl_display)) {
+	while (wl_display_flush(state->wl_display) != -1) { 
 		if (fgets(input, BUFSIZ, stdin)) {
 			parse_input(state, input);
 			wl_surface_attach(state->wl_surface, create_buffer(state), 0, 0);
