@@ -1,31 +1,33 @@
 {
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  description = "A minimal status bar for Wayland compositors";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+  outputs = { self, nixpkgs }:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
+    in {
+      packages.${system}.default = pkgs.stdenv.mkDerivation {
+        pname = "ergo";
+        version = "0.0.4";
 
-  outputs = { self, nixpkgs }: let
-    pkgs = import nixpkgs { system = "x86_64-linux"; };
-  in {
-    packages.x86_64-linux.default = pkgs.stdenv.mkDerivation {
-      pname = "ergo";
-      version = "0.0.3";
+        src = self;
 
-      src = ./.;
+        nativeBuildInputs = with pkgs; [
+          pkg-config
+          wayland-scanner
+        ];
 
-      nativeBuildInputs = with pkgs; [
-        pkg-config
-        wayland-scanner
-      ];
+        outputs = [ "out" ];
 
-      outputs = [ "out" ];
+        makeFlags = [ "PREFIX=$(out)" ];
 
-			makeFlags = [ "PREFIX=$(out)" ];
-
-      buildInputs = with pkgs; [
-        cairo
-        pango
-        wayland
-        wayland-protocols
-      ];
+        buildInputs = with pkgs; [
+          cairo
+          pango
+          wayland
+          wayland-protocols
+        ];
+      };
     };
-  };
 }
 
